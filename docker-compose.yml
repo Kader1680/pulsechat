@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pc_postgres
+    environment:
+      POSTGRES_USER: pcuser
+      POSTGRES_PASSWORD: pc123
+      POSTGRES_DB: pulsechat
+    ports: ["5432:5432"]
+    volumes: ["pc_pg:/var/lib/postgresql/data"]
+  redis:
+    image: redis:7-alpine
+    container_name: pc_redis
+    ports: ["6379:6379"]
+    volumes: ["pc_redis:/data"]
+volumes:
+  pc_pg:
+  pc_redis:
