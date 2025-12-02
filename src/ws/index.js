@@ -12,7 +12,7 @@ export function initWS(app) {
       methods: ['GET', 'POST'],
       credentials: true
     }
-    // path: '/socket.io' // اختياري، الافتراضي يعمل fine
+   
   });
 
   io.use(wsAuth);
@@ -20,3 +20,5 @@ export function initWS(app) {
 
   return httpServer;  
 }
+
+

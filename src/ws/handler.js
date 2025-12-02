@@ -1,7 +1,6 @@
 import { pool } from '../db.js';
 import { Server as IOServer } from 'socket.io';
 
-// ضمان وجود الغرفة
 async function ensureRoomExists(roomName) {
   try {
     const { rows } = await pool.query('SELECT id FROM rooms WHERE name = $1', [roomName]);
@@ -24,14 +23,13 @@ export function registerHandlers(io) {
   io.on('connection', (socket) => {
     console.log('WS connected uid:', socket.data.uid);
 
-    // الانضمام للغرفة
+   
     socket.on('join', async (room, ack) => {
       socket.join(room);
       console.log(socket.data.uid, 'joined room', room);
       ack(true);
     });
 
-    // إرسال رسالة
     socket.on('send_message', async ({ room, text }) => {
       try {
         const uid = socket.data.uid;
@@ -50,10 +48,8 @@ export function registerHandlers(io) {
           at: result.rows[0].created_at
         };
 
-        // إرسال لكل الناس في الغرفة
         io.in(room).emit('new_message', messageData);
 
-        // تأكيد للمرسل
         socket.emit('message_stored', messageData);
 
       } catch (error) {
@@ -62,7 +58,6 @@ export function registerHandlers(io) {
       }
     });
 
-    // إرسال تاريخ الرسائل
     socket.on('history', async (room, ack) => {
       try {
         const { rows } = await pool.query(
@@ -82,4 +77,16 @@ export function registerHandlers(io) {
       }
     });
   });
+}
+
+
+export function allroomsHandler(req, res) {
+  pool.query('SELECT name FROM rooms ORDER BY name ASC')
+    .then(result => {
+      res.json({ rooms: result.rows.map(r => r.name) });
+    })
+    .catch(err => {
+      console.error('Error fetching rooms:', err);
+      res.status(500).json({ error: 'Failed to fetch rooms' });
+    }); 
 }
