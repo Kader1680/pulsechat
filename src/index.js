@@ -8,6 +8,7 @@ import { initWS } from './ws/index.js';
 
 import authRoutes from './routes/auth.js';
 import healthRoutes from './routes/health.js';
+import roomsRoutes from   './routes/rooms.js';
 
 console.log('POSTGRES_URL:', process.env.POSTGRES_URL);
 console.log('REDIS_URL:', process.env.REDIS_URL);
@@ -24,7 +25,8 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api', healthRoutes);
-
+app.use('/api', roomsRoutes);
+ 
 const httpServer = initWS(app);
 
 const port = process.env.PORT || 4000;
